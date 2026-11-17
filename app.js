@@ -1,5 +1,5 @@
 // app.js - Lógica de la interfaz, envío resiliente y sincronización
-// Versión Tema 5.2 (Patrón Outbox + evento online)
+// Versión Tema 5.3 (Background Sync + postMessage + fallback online)
 
 const ENDPOINT = 'https://jsonplaceholder.typicode.com/posts';
 
@@ -11,9 +11,17 @@ const btnPurgar = document.getElementById('btn-purgar');
 const badgeRed = document.getElementById('badge-red');
 
 // ---------------------------------------------------------
-// Registro del Service Worker
+// Registro del Service Worker + escucha de mensajes del SW
 // ---------------------------------------------------------
 if ('serviceWorker' in navigator) {
+  // Fragmento G: el SW avisa cuando terminó de sincronizar
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    if (event.data && event.data.tipo === 'OUTBOX_SINCRONIZADO') {
+      console.log('[UI] Confirmación recibida del Service Worker. Actualizando bandeja...');
+      renderizarColaOutbox();
+    }
+  });
+
   // Ruta relativa para que funcione en GitHub Pages
   navigator.serviceWorker.register('./sw.js')
     .then((registro) => {
@@ -94,13 +102,23 @@ function procesarEnvioReporte(datosFormulario) {
       });
     })
     .catch(() => {
-      console.warn('[Outbox] Sin conexión. Encolando transacción localmente...');
+      console.warn('[Outbox] Sin conexión. Encolando en IndexedDB...');
 
       return guardarRegistro({
         ...datosFormulario,
         estado: 'pendiente',
         fechaCreacion: Date.now()
-      });
+      })
+        .then(() => {
+          // Fragmento E: si el navegador soporta Background Sync, se lo dejamos al SW
+          if ('serviceWorker' in navigator && 'SyncManager' in window) {
+            return navigator.serviceWorker.ready
+              .then((registro) => {
+                console.log('[Outbox] Registrando etiqueta sync-reportes en el SW...');
+                return registro.sync.register('sync-reportes');
+              });
+          }
+        });
     })
     .then(() => {
       return renderizarColaOutbox();
@@ -108,9 +126,9 @@ function procesarEnvioReporte(datosFormulario) {
 }
 
 // ---------------------------------------------------------
-// UPDATE: reenviar pendientes al recuperar la red
+// UPDATE (fallback): solo para navegadores sin SyncManager (Safari/iOS, Firefox)
 // ---------------------------------------------------------
-function sincronizarPendientes() {
+function sincronizarPendientesFallback() {
   console.log('[Outbox] Conexión detectada. Buscando registros pendientes...');
 
   return obtenerTodosLosRegistros()
@@ -145,10 +163,14 @@ function sincronizarPendientes() {
     });
 }
 
-// Escuchar el regreso de la conectividad
+// Fragmento F: evitar envíos duplicados (race condition) en Chrome
 window.addEventListener('online', () => {
   actualizarIndicadorRed();
-  sincronizarPendientes();
+
+  if (!('SyncManager' in window)) {
+    console.log('[Outbox] Navegador sin SyncManager. Ejecutando fallback por evento online...');
+    sincronizarPendientesFallback();
+  }
 });
 
 window.addEventListener('offline', actualizarIndicadorRed);
