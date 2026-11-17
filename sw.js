@@ -4,7 +4,7 @@
 // Importar el mini-wrapper de IndexedDB (ruta relativa para GitHub Pages)
 importScripts('./db-helper.js');
 
-const CACHE_STATIC_NAME = 'static-outbox-v2';
+const CACHE_STATIC_NAME = 'static-outbox-v3';
 const STATIC_FILES = [
   './',
   './index.html',
