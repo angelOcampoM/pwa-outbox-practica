@@ -1,0 +1,150 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #f1f5f9;
+  color: #1e293b;
+}
+
+header {
+  background: #1e3a8a;
+  color: white;
+  padding: 15px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+header h1 {
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.badge {
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: bold;
+}
+
+.badge.online {
+  background: #16a34a;
+}
+
+.badge.offline {
+  background: #dc2626;
+}
+
+main {
+  max-width: 700px;
+  margin: 20px auto;
+  padding: 0 15px;
+}
+
+.card {
+  background: white;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.card h2 {
+  margin-top: 0;
+  font-size: 1.1rem;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+input,
+textarea {
+  padding: 10px;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+textarea {
+  min-height: 80px;
+  resize: vertical;
+}
+
+button {
+  padding: 10px;
+  border: none;
+  border-radius: 5px;
+  background: #1e3a8a;
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #1e40af;
+}
+
+.header-lista {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.header-lista h2 {
+  margin: 0;
+}
+
+#btn-purgar {
+  background: #b91c1c;
+  font-size: 0.9rem;
+}
+
+#lista-outbox {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#lista-outbox li {
+  border-left: 5px solid #94a3b8;
+  background: #f8fafc;
+  padding: 10px;
+  margin-bottom: 8px;
+  border-radius: 4px;
+}
+
+#lista-outbox li.pendiente {
+  border-left-color: #f59e0b;
+}
+
+#lista-outbox li.sincronizado {
+  border-left-color: #16a34a;
+}
+
+.estado {
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+
+.hora {
+  font-size: 0.8rem;
+  color: #64748b;
+}
+
+.vacio {
+  color: #64748b;
+  font-style: italic;
+}
